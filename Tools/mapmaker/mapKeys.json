@@ -1,0 +1,69 @@
+{
+    "Walls and Structures": {
+        "X": {"description": "Solid Wall"},
+        "x": {"description": "Cracked Wall"},
+        "Y": {"description": "Reinforced Wall"},
+        "y": {"description": "Wooden Wall"},
+        "Z": {"description": "Stone Wall"},
+        "z": {"description": "Glass Wall"}
+    },
+    "Doors": {
+        "D": {"description": "Door"},
+        "d": {"description": "Locked Door"},
+        "H": {"description": "Hidden Door"},
+        "h": {"description": "Secret Passage"},
+        "G": {"description": "Gate"},
+        "g": {"description": "Portcullis"}
+    },
+    "Floors and Ground": {
+        ".": {"description": "Floor"},
+        ",": {"description": "Dirt Floor"},
+        ";": {"description": "Grass"},
+        ":": {"description": "Sand"},
+        "#": {"description": "Cobblestone"},
+        "@": {"description": "Carpet"}
+    },
+    "Water and Liquids": {
+        "~": {"description": "Water"},
+        "w": {"description": "Shallow Water"},
+        "W": {"description": "Deep Water"},
+        "^": {"description": "Lava"},
+        "v": {"description": "Acid"}
+    },
+    "Traps and Hazards": {
+        "T": {"description": "Trap"},
+        "t": {"description": "Spike Trap"},
+        "B": {"description": "Pitfall"},
+        "b": {"description": "Fire Trap"},
+        "F": {"description": "Poison Gas"},
+        "f": {"description": "Quicksand"}
+    },
+    "Special Features": {
+        "*": {"description": "Treasure"},
+        "+": {"description": "Healing Fountain"},
+        "-": {"description": "Magic Portal"},
+        "=": {"description": "Altar"},
+        "_": {"description": "Staircase Up"},
+        "|": {"description": "Staircase Down"}
+    },
+    "Furniture and Items": {
+        "C": {"description": "Chest"},
+        "c": {"description": "Crate"},
+        "S": {"description": "Statue"},
+        "s": {"description": "Signpost"},
+        "R": {"description": "Rug"},
+        "r": {"description": "Rock"}
+    },
+    "NPCs and Creatures": {
+        "N": {"description": "NPC"},
+        "n": {"description": "Neutral Creature"},
+        "E": {"description": "Enemy"},
+        "e": {"description": "Elite Enemy"}
+    },
+    "Miscellaneous": {
+        "L": {"description": "Light Source"},
+        "l": {"description": "Lever"},
+        "M": {"description": "Magic Circle"},
+        "m": {"description": "Message"}
+    }
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Creation Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="top-bar">
+        <label for="horizontal-size">Horizontal:</label>
+        <input type="number" id="horizontal-size" min="1" value="2">
+        
+        <label for="vertical-size">Vertical:</label>
+        <input type="number" id="vertical-size" min="1" value="2">
+        
+        <label for="map-name">Map Name:</label>
+        <input type="text" id="map-name">
+        
+        <label for="file-name">File Name:</label>
+        <input type="text" id="file-name">
+        
+        <button id="save-button">Save</button>
+        <button id="load-file-button">Choose File or Drop File</button>
+        <input type="file" id="load-file" accept=".txt" style="display: none;">
+        <button id="usage-button">Click for Usage</button>
+    </div>
+
+    <div id="right-bar">
+        <div id="control-section">
+            <button id="undo-button">Undo</button>
+            <button id="redo-button">Redo</button>
+            <button id="reset-map-button" style="background-color: lightcoral; margin-top: 10px;">Reset Map</button>
+        </div>
+        <h3>Map Keys</h3>
+        <div id="map-keys">
+            <!-- Map keys will be dynamically populated here -->
+        </div>
+    </div>
+
+    <div id="main-section">
+        <div id="map-grid" class="empty"></div>
+    </div>
+
+    <div id="usage-dialog">
+        <div class="dialog-content">
+            <ul>
+                <li>Set a horizontal and vertical map size, set a map name and file name.</li>
+                <li>Select a map tile type by left-clicking the tile type from the Map Keys section.</li>
+                <li>Left-Click or Left-Click and Drag across grids in the map to change those grids to the selected map tile type.</li>
+                <li>Right-Click a field to fill the contiguous fields of that clicked on map tile type to the selected type.</li>
+                <li>Click Save to create an output map file.</li>
+                <li>Click and Drag into the provided area to load an existing map.</li>
+            </ul>
+            <button id="close-dialog">Close</button>
+        </div>
+    </div>
+
+    <div id="confirm-reset-dialog">
+        <div class="dialog-content">
+            <p>Are you sure you want to reset the map?</p>
+            <button id="confirm-reset">Confirm</button>
+            <button id="cancel-reset">Cancel</button>
+        </div>
+    </div>
+
+    <div id="selected-tile-tooltip"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

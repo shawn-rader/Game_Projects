@@ -1,0 +1,14 @@
+{
+  "name": "game-projects-server",
+  "version": "1.0.0",
+  "description": "A simple Node.js server to host game projects",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

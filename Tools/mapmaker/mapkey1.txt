@@ -1,0 +1,61 @@
+Map Key
+Walls and Structures
+X = Solid Wall
+x = Cracked Wall
+Y = Reinforced Wall
+y = Wooden Wall
+Z = Stone Wall
+z = Glass Wall
+Doors
+D = Door
+d = Locked Door
+H = Hidden Door
+h = Secret Passage
+G = Gate
+g = Portcullis
+Floors and Ground
+. = Floor
+, = Dirt Floor
+; = Grass
+: = Sand
+# = Cobblestone
+@ = Carpet
+Water and Liquids
+~ = Water
+w = Shallow Water
+W = Deep Water
+^ = Lava
+v = Acid
+Traps and Hazards
+T = Trap
+t = Spike Trap
+B = Pitfall
+b = Fire Trap
+F = Poison Gas
+f = Quicksand
+Special Features
+* = Treasure
++ = Healing Fountain
+- = Magic Portal
+= = Altar
+_ = Staircase Up
+| = Staircase Down
+Furniture and Items
+C = Chest
+c = Crate
+S = Statue
+s = Signpost
+R = Rug
+r = Rock
+NPCs and Creatures
+N = NPC
+n = Neutral Creature
+E = Enemy
+e = Elite Enemy
+Miscellaneous
+L = Light Source
+l = Lever
+M = Magic Circle
+m = Message
+
+
