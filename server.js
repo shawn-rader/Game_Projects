@@ -117,6 +117,7 @@ const upload = multer({ storage: storage });
 app.post('/uploadFile', upload.single('file'), (req, res) => {
   const uuid = req.body.uuid;
   logWithTimestamp(`Handling file upload for UUID: ${uuid}`);
+  logWithTimestamp(`Request body: ${JSON.stringify(req.body)}`);
   if (!uuid) {
     logWithTimestamp('UUID is undefined in the request body.');
     return res.status(400).send('UUID is required');
