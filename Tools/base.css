@@ -1,0 +1,96 @@
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    user-select: none; /* Prevent text selection */
+    background-color: #999; /* Set background color to match map-grid */
+}
+
+#top-bar {
+    display: flex;
+    padding: 10px;
+    background-color: #333;
+    border-bottom: 2px solid #666;
+    border-right: 2px solid #666;
+    color: white;
+}
+
+#top-bar label, #top-bar input, #top-bar button {
+    margin-right: 10px;
+}
+
+#main-section {
+    flex-grow: 1;
+    padding: 10px;
+    overflow: auto;
+    background-color: #999; /* Set background color to match map-grid */
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.section {
+    width: 45%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+#topmost-bar {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropbtn {
+    background-color: #333;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #2980b9;
+}
