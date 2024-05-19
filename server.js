@@ -19,6 +19,7 @@ function logWithTimestamp(message) {
 }
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('/home/bitnami/game_projects'));
 
 // Serve the main index.html
