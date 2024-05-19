@@ -28,11 +28,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function createClientFolder(uuid) {
         const response = await fetch(`/createClientFolder/${uuid}`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error('Failed to create client folder');
+        }
         return response.ok;
     }
 
     async function folderExists(uuid) {
         const response = await fetch(`/folderExists/${uuid}`);
+        if (!response.ok && response.status !== 404) {
+            throw new Error('Error checking if folder exists');
+        }
         return response.ok;
     }
 
@@ -40,6 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         let newUUID;
         do {
             newUUID = generateUUID();
+            const exists = await folderExists(newUUID);
+            console.log(`Checking folder existence for UUID ${newUUID}: ${exists}`);
         } while (await folderExists(newUUID));
         return newUUID;
     }
@@ -68,20 +76,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     generateClientButton.addEventListener('click', async () => {
         if (!uuid) {
-            uuid = await generateClientUUID();
-            const folderCreated = await createClientFolder(uuid);
-            if (folderCreated) {
-                clients.push({ uuid: uuid });
-                enableButtons();
+            try {
+                uuid = await generateClientUUID();
+                console.log('Generated UUID:', uuid);
+                const folderCreated = await createClientFolder(uuid);
+                if (folderCreated) {
+                    clients.push({ uuid: uuid });
+                    enableButtons();
 
-                const clientURL = `${window.location.origin}/Tools/ContentSharing/ContentSharingClient.html?uuid=${uuid}`;
-                copyClientURLButton.setAttribute('data-url', clientURL);
-                launchClientPageButton.setAttribute('data-url', clientURL);
+                    const clientURL = `${window.location.origin}/Tools/ContentSharing/ContentSharingClient.html?uuid=${uuid}`;
+                    copyClientURLButton.setAttribute('data-url', clientURL);
+                    launchClientPageButton.setAttribute('data-url', clientURL);
 
-                generateClientButton.disabled = true;
-                generateClientButton.style.display = 'none';
-            } else {
-                console.error('Failed to create folder for client.');
+                    generateClientButton.disabled = true;
+                    generateClientButton.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error generating client folder:', error);
             }
         }
     });

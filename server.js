@@ -67,6 +67,7 @@ app.get('/folderExists/:uuid', (req, res) => {
 app.post('/createClientFolder/:uuid', (req, res) => {
   const { uuid } = req.params;
   const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
+  logWithTimestamp(`Creating folder for UUID: ${uuid}`);
   fs.mkdir(folderPath, { recursive: true }, (err) => {
     if (err) {
       logWithTimestamp(`Failed to create folder: ${err}`);
