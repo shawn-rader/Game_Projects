@@ -22,6 +22,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('/home/bitnami/game_projects'));
 
+// Middleware to log incoming request body for file uploads
+app.use('/uploadFile', (req, res, next) => {
+  req.on('data', (chunk) => {
+    console.log(`Received chunk: ${chunk}`);
+  });
+  req.on('end', () => {
+    console.log(`Completed receiving data`);
+    next();
+  });
+});
+
 // Serve the main index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join('/home/bitnami/game_projects', 'index.html'));
