@@ -20,10 +20,21 @@
 
     <div id="top-bar">
         <button id="generate-client-button">Generate Client</button>
+        <button id="copy-client-url-button" disabled>Copy Client URL</button>
+        <button id="launch-client-page-button" disabled>Launch Client Page</button>
+        <button id="add-content-button" disabled>Add Content</button>
     </div>
 
     <div id="main-section">
         <div id="content-area" class="content-area"></div>
+    </div>
+
+    <div id="add-content-dialog" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Add your content here.</p>
+            <button id="cancel-button">Cancel</button>
+        </div>
     </div>
 
     <script src="host.js"></script>

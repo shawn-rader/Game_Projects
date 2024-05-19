@@ -1,0 +1,6 @@
+{
+    "checkInterval": 30000,
+    "deleteAfter": 300000,
+    "updateInterval": 1000
+  }
+  

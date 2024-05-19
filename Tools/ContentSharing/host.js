@@ -1,15 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const contentArea = document.getElementById('content-area');
     const generateClientButton = document.getElementById('generate-client-button');
-    
-    let uuid = generateUUID();
+    const copyClientURLButton = document.getElementById('copy-client-url-button');
+    const launchClientPageButton = document.getElementById('launch-client-page-button');
+    const addContentButton = document.getElementById('add-content-button');
+    const addContentDialog = document.getElementById('add-content-dialog');
+    const closeBtn = document.querySelector('.close');
+    const cancelButton = document.getElementById('cancel-button');
+
+    let uuid = null;
     let clients = [];
+    let config = {};
+
+    async function fetchConfig() {
+        const response = await fetch('/config.json');
+        config = await response.json();
+    }
 
     function generateUUID() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
+    }
+
+    function createClientFolder(uuid) {
+        fetch(`/createClientFolder/${uuid}`, { method: 'POST' })
+            .then(response => {
+                if (response.ok) {
+                    console.log(`Folder created for client: ${uuid}`);
+                } else {
+                    console.error('Failed to create folder for client.');
+                }
+            });
     }
 
     function updateClients() {
@@ -28,12 +51,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function enableButtons() {
+        copyClientURLButton.disabled = false;
+        launchClientPageButton.disabled = false;
+        addContentButton.disabled = false;
+    }
+
+    function disableButtons() {
+        copyClientURLButton.disabled = true;
+        launchClientPageButton.disabled = true;
+        addContentButton.disabled = true;
+    }
+
     generateClientButton.addEventListener('click', () => {
-        const clientUUID = generateUUID();
-        clients.push({ uuid: clientUUID });
-        console.log(`Client generated: /Tools/ContentSharing/ContentSharingClient.html?uuid=${clientUUID}`);
+        uuid = generateUUID();
+        clients.push({ uuid: uuid });
+        createClientFolder(uuid);
+        enableButtons();
+
+        const clientURL = `${window.location.origin}/Tools/ContentSharing/ContentSharingClient.html?uuid=${uuid}`;
+        copyClientURLButton.setAttribute('data-url', clientURL);
+        launchClientPageButton.setAttribute('data-url', clientURL);
     });
 
-    // Simulate content update every second
-    setInterval(updateClients, 1000);
+    copyClientURLButton.addEventListener('click', () => {
+        const url = copyClientURLButton.getAttribute('data-url');
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Client URL copied to clipboard');
+        });
+    });
+
+    launchClientPageButton.addEventListener('click', () => {
+        const url = launchClientPageButton.getAttribute('data-url');
+        window.open(url, '_blank');
+    });
+
+    addContentButton.addEventListener('click', () => {
+        addContentDialog.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', () => {
+        addContentDialog.style.display = 'none';
+    });
+
+    cancelButton.addEventListener('click', () => {
+        addContentDialog.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === addContentDialog) {
+            addContentDialog.style.display = 'none';
+        }
+    });
+
+    // Fetch configuration
+    await fetchConfig();
+
+    // Simulate content update every configurable interval
+    setInterval(updateClients, config.updateInterval);
 });
