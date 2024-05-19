@@ -57,12 +57,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         addContentButton.disabled = false;
     }
 
-    function disableButtons() {
-        copyClientURLButton.disabled = true;
-        launchClientPageButton.disabled = true;
-        addContentButton.disabled = true;
-    }
-
     generateClientButton.addEventListener('click', () => {
         uuid = generateUUID();
         clients.push({ uuid: uuid });
@@ -78,6 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const url = copyClientURLButton.getAttribute('data-url');
         navigator.clipboard.writeText(url).then(() => {
             alert('Client URL copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
         });
     });
 
