@@ -8,7 +8,7 @@ let clientsData = {};
 let lastClientAccess = {};
 
 // Read configuration file
-const config = JSON.parse(fs.readFileSync('config.json'));
+const config = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 app.use(express.json());
 app.use(express.static('/home/bitnami/game_projects'));
@@ -50,6 +50,7 @@ app.post('/createClientFolder/:uuid', (req, res) => {
       console.error('Failed to create folder:', err);
       res.sendStatus(500);
     } else {
+      console.log(`Folder created: ${folderPath}`);
       res.sendStatus(200);
     }
   });
@@ -74,6 +75,7 @@ function deleteUnusedFolders() {
           if (err) {
             console.error('Failed to delete folder:', err);
           } else {
+            console.log(`Deleted folder: ${filePath}`);
             delete lastClientAccess[file];
             delete clientsData[file];
           }

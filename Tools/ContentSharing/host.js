@@ -70,11 +70,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     copyClientURLButton.addEventListener('click', () => {
         const url = copyClientURLButton.getAttribute('data-url');
-        navigator.clipboard.writeText(url).then(() => {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Client URL copied to clipboard');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        } else {
+            const tempInput = document.createElement('input');
+            tempInput.style.position = 'absolute';
+            tempInput.style.left = '-9999px';
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
             alert('Client URL copied to clipboard');
-        }).catch(err => {
-            console.error('Failed to copy text: ', err);
-        });
+        }
     });
 
     launchClientPageButton.addEventListener('click', () => {
