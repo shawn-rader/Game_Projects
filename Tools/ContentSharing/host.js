@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const launchClientPageButton = document.getElementById('launch-client-page-button');
     const addContentButton = document.getElementById('add-content-button');
     const addContentDialog = document.getElementById('add-content-dialog');
+    const addImageButton = document.getElementById('add-image-button');
+    const fileInput = document.getElementById('file-input');
     const closeBtn = document.querySelector('.close');
     const cancelButton = document.getElementById('cancel-button');
 
@@ -24,15 +26,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    function createClientFolder(uuid) {
-        fetch(`/createClientFolder/${uuid}`, { method: 'POST' })
-            .then(response => {
-                if (response.ok) {
-                    console.log(`Folder created for client: ${uuid}`);
-                } else {
-                    console.error('Failed to create folder for client.');
-                }
-            });
+    async function createClientFolder(uuid) {
+        const response = await fetch(`/createClientFolder/${uuid}`, { method: 'POST' });
+        return response.ok;
+    }
+
+    async function folderExists(uuid) {
+        const response = await fetch(`/folderExists/${uuid}`);
+        return response.ok;
+    }
+
+    async function generateClientUUID() {
+        let newUUID;
+        do {
+            newUUID = generateUUID();
+        } while (await folderExists(newUUID));
+        return newUUID;
     }
 
     function updateClients() {
@@ -57,15 +66,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         addContentButton.disabled = false;
     }
 
-    generateClientButton.addEventListener('click', () => {
-        uuid = generateUUID();
-        clients.push({ uuid: uuid });
-        createClientFolder(uuid);
-        enableButtons();
+    generateClientButton.addEventListener('click', async () => {
+        if (!uuid) {
+            uuid = await generateClientUUID();
+            const folderCreated = await createClientFolder(uuid);
+            if (folderCreated) {
+                clients.push({ uuid: uuid });
+                enableButtons();
 
-        const clientURL = `${window.location.origin}/Tools/ContentSharing/ContentSharingClient.html?uuid=${uuid}`;
-        copyClientURLButton.setAttribute('data-url', clientURL);
-        launchClientPageButton.setAttribute('data-url', clientURL);
+                const clientURL = `${window.location.origin}/Tools/ContentSharing/ContentSharingClient.html?uuid=${uuid}`;
+                copyClientURLButton.setAttribute('data-url', clientURL);
+                launchClientPageButton.setAttribute('data-url', clientURL);
+
+                generateClientButton.disabled = true;
+                generateClientButton.style.display = 'none';
+            } else {
+                console.error('Failed to create folder for client.');
+            }
+        }
     });
 
     copyClientURLButton.addEventListener('click', () => {
@@ -96,6 +114,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     addContentButton.addEventListener('click', () => {
         addContentDialog.style.display = 'block';
+    });
+
+    addImageButton.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('uuid', uuid);
+
+            const response = await fetch('/uploadFile', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const fileURL = await response.text();
+                contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content">`;
+                addContentDialog.style.display = 'none';
+            } else {
+                console.error('Failed to upload file');
+            }
+        }
     });
 
     closeBtn.addEventListener('click', () => {
