@@ -136,18 +136,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('uuid', uuid);
-
+    
             console.log('Uploading file with UUID:', uuid);
-            console.log('formData UUID:', formData.get('uuid'));
             console.log('formData file:', formData.get('file'));
-
+    
             try {
-                const response = await fetch('/uploadFile', {
+                const response = await fetch(`/uploadFile/${uuid}`, {
                     method: 'POST',
                     body: formData
                 });
-
+    
                 if (response.ok) {
                     const fileURL = await response.text();
                     contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content">`;
@@ -160,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
-
+    
     closeBtn.addEventListener('click', () => {
         addContentDialog.style.display = 'none';
     });
