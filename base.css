@@ -55,6 +55,9 @@ th {
     background-color: #333;
     color: white;
     padding: 10px;
+    border-bottom: 3px solid #999; /* Add a bottom border */
+    display: flex; /* Use flexbox to align items */
+    justify-content: space-between; /* Space items evenly */
 }
 
 .dropdown {
@@ -89,8 +92,14 @@ th {
     font-size: 16px;
     border: none;
     cursor: pointer;
+    border-bottom: 3px solid white; /* Add a bottom border to indicate dropdown */
 }
 
 .dropbtn:hover, .dropbtn:focus {
     background-color: #2980b9;
+}
+
+#page-name {
+    align-self: center; /* Center vertically */
+    margin-right: 10px; /* Add some space to the right */
 }
