@@ -22,17 +22,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('/home/bitnami/game_projects'));
 
-// Middleware to log incoming request body for file uploads
-app.use('/uploadFile', (req, res, next) => {
-  req.on('data', (chunk) => {
-    console.log(`Received chunk: ${chunk}`);
-  });
-  req.on('end', () => {
-    console.log(`Completed receiving data`);
-    next();
-  });
-});
-
 // Serve the main index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join('/home/bitnami/game_projects', 'index.html'));
@@ -95,6 +84,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uuid = req.body.uuid;
     logWithTimestamp(`Received file upload request for UUID: ${uuid}`);
+    logWithTimestamp(`Request body: ${JSON.stringify(req.body)}`);
     if (!uuid) {
       logWithTimestamp('UUID is undefined in the request body.');
       return cb(new Error('UUID is undefined'), false);
