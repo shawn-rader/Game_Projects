@@ -139,6 +139,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('uuid', uuid);
 
             console.log('Uploading file with UUID:', uuid);
+            console.log('formData UUID:', formData.get('uuid'));
+            console.log('formData file:', formData.get('file'));
 
             try {
                 const response = await fetch('/uploadFile', {
