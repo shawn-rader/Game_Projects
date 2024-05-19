@@ -7,14 +7,13 @@
     <link rel="stylesheet" type="text/css" href="base.css">
 </head>
 <body>
-    <div id="includeTopmostBar"></div>
-    <script>
+    <div id="includeTopmostBar"></div><script>
         fetch('topmost-bar.html')
             .then(response => response.text())
-            .then(data => document.getElementById('includeTopmostBar').innerHTML = data);
-    </script>
-    <script>
-        document.getElementById('page-name').innerText = document.title;
+            .then(data => {
+                document.getElementById('includeTopmostBar').innerHTML = data;
+                document.getElementById('page-name').innerText = document.title;
+            });
     </script>
     <div id="top-bar">
         <h1>Welcome to my game projects. This is all a work in progress.</h1>
