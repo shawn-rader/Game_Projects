@@ -113,34 +113,34 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    logWithTimestamp(`File filter: ${file.originalname}`);
+    logWithTimestamp(`Request body in file filter: ${JSON.stringify(req.body)}`);
+    cb(null, true);
+  }
+}).fields([{ name: 'file', maxCount: 1 }, { name: 'uuid', maxCount: 1 }]);
 
-app.post('/uploadFile', (req, res, next) => {
-  multer().fields([{ name: 'uuid', maxCount: 1 }])(req, res, function (err) {
+app.post('/uploadFile', (req, res) => {
+  upload(req, res, function (err) {
     if (err) {
-      logWithTimestamp(`Field parsing error: ${err.message}`);
+      logWithTimestamp(`Upload error: ${err.message}`);
       return res.status(400).send(err.message);
     }
-    logWithTimestamp(`Form fields parsed: ${JSON.stringify(req.body)}`);
-    upload.single('file')(req, res, function (err) {
-      if (err) {
-        logWithTimestamp(`Upload error: ${err.message}`);
-        return res.status(400).send(err.message);
-      }
 
-      const uuid = req.body.uuid;
-      logWithTimestamp(`Handling file upload for UUID: ${uuid}`);
-      logWithTimestamp(`Request body: ${JSON.stringify(req.body)}`);
-      if (!uuid) {
-        logWithTimestamp('UUID is undefined in the request body.');
-        return res.status(400).send('UUID is required');
-      }
+    const uuid = req.body.uuid;
+    logWithTimestamp(`Handling file upload for UUID: ${uuid}`);
+    logWithTimestamp(`Request body: ${JSON.stringify(req.body)}`);
+    if (!uuid) {
+      logWithTimestamp('UUID is undefined in the request body.');
+      return res.status(400).send('UUID is required');
+    }
   
-      const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
-      const fileURL = path.join(folderPath, req.file.filename);
-      logWithTimestamp(`File uploaded to: ${fileURL}`);
-      res.send(fileURL);
-    });
+    const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
+    const fileURL = path.join(folderPath, req.files['file'][0].filename);
+    logWithTimestamp(`File uploaded to: ${fileURL}`);
+    res.send(fileURL);
   });
 });
 
