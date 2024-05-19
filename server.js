@@ -113,7 +113,14 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    logWithTimestamp(`File filter: ${file.originalname}`);
+    logWithTimestamp(`Request body in file filter: ${JSON.stringify(req.body)}`);
+    cb(null, true);
+  }
+});
 
 app.post('/uploadFile', upload.single('file'), (req, res) => {
   const uuid = req.body.uuid;
