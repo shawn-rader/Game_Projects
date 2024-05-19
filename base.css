@@ -55,9 +55,13 @@ th {
     background-color: #333;
     color: white;
     padding: 10px;
-    border-bottom: 3px solid #999; /* Add a bottom border */
-    display: flex; /* Use flexbox to align items */
-    justify-content: space-between; /* Space items evenly */
+    border-bottom: 3px solid #999;
+    display: flex;
+    justify-content: space-between;
+}
+
+#dropdowns {
+    display: flex;
 }
 
 .dropdown {
