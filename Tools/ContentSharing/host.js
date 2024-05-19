@@ -127,17 +127,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             formData.append('file', file);
             formData.append('uuid', uuid);
 
-            const response = await fetch('/uploadFile', {
-                method: 'POST',
-                body: formData
-            });
+            try {
+                const response = await fetch('/uploadFile', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            if (response.ok) {
-                const fileURL = await response.text();
-                contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content">`;
-                addContentDialog.style.display = 'none';
-            } else {
-                console.error('Failed to upload file');
+                if (response.ok) {
+                    const fileURL = await response.text();
+                    contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content">`;
+                    addContentDialog.style.display = 'none';
+                } else {
+                    console.error('Failed to upload file');
+                }
+            } catch (err) {
+                console.error('Error during file upload:', err);
             }
         }
     });

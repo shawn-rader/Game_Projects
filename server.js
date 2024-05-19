@@ -81,6 +81,12 @@ app.post('/createClientFolder/:uuid', (req, res) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uuid = req.body.uuid;
+    logWithTimestamp(`Received file upload request for UUID: ${uuid}`);
+    if (!uuid) {
+      logWithTimestamp('UUID is undefined in the request body.');
+      return cb(new Error('UUID is undefined'), false);
+    }
+
     const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
     if (!fs.existsSync(folderPath)) {
       logWithTimestamp(`UUID folder does not exist: ${folderPath}`);
@@ -108,6 +114,12 @@ const upload = multer({ storage: storage });
 
 app.post('/uploadFile', upload.single('file'), (req, res) => {
   const uuid = req.body.uuid;
+  logWithTimestamp(`Handling file upload for UUID: ${uuid}`);
+  if (!uuid) {
+    logWithTimestamp('UUID is undefined in the request body.');
+    return res.status(400).send('UUID is required');
+  }
+  
   const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
   const fileURL = path.join(folderPath, req.file.filename);
   logWithTimestamp(`File uploaded to: ${fileURL}`);
