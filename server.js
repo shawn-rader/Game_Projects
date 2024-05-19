@@ -117,16 +117,14 @@ const upload = multer({ storage: storage });
 app.post('/uploadFile/:uuid', upload.single('file'), (req, res) => {
   const { uuid } = req.params;
   logWithTimestamp(`Handling file upload for UUID: ${uuid}`);
-  logWithTimestamp(`Request body: ${JSON.stringify(req.body)}`);
   if (!uuid) {
     logWithTimestamp('UUID is undefined in the request parameters.');
     return res.status(400).send('UUID is required');
   }
   
-  const folderPath = path.join('/home/bitnami/game_projects/Tools/ContentSharing/HostedData', uuid);
-  const fileURL = path.join(folderPath, req.file.filename);
-  logWithTimestamp(`File uploaded to: ${fileURL}`);
-  res.send(fileURL);
+  const relativeFilePath = path.join('HostedData', uuid, req.file.filename);
+  logWithTimestamp(`File uploaded to: ${relativeFilePath}`);
+  res.send(relativeFilePath);
 });
 
 // Delete unused folders
