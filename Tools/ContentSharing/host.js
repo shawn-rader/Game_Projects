@@ -23,8 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let clients = [];
     let config = {};
     let zoomLevel = 1;
-    let isPanning = false;
-    let startX, startY, scrollLeft, scrollTop;
 
     async function fetchConfig() {
         const response = await fetch('/config.json');
@@ -282,45 +280,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     contentArea.addEventListener('wheel', (event) => {
         if (event.ctrlKey) {
             event.preventDefault();
-            zoomLevel += event.deltaY * -0.01;
-            zoomLevel = Math.min(Math.max(0.5, zoomLevel), 3);
             const zoomableContent = contentArea.querySelector('.zoomable-content');
             if (zoomableContent) {
+                const rect = contentArea.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const offsetX = (centerX + contentArea.scrollLeft) / zoomLevel;
+                const offsetY = (centerY + contentArea.scrollTop) / zoomLevel;
+                zoomLevel += event.deltaY * -0.01;
                 zoomableContent.style.transform = `scale(${zoomLevel})`;
-                zoomableContent.style.transformOrigin = '0 0';
+                contentArea.scrollLeft = offsetX * zoomLevel - centerX;
+                contentArea.scrollTop = offsetY * zoomLevel - centerY;
             }
             updateClients();
         }
     });
 
-    // Panning functionality
-    contentArea.addEventListener('mousedown', (event) => {
-        if (zoomLevel > 1) {
-            isPanning = true;
-            startX = event.pageX - contentArea.offsetLeft;
-            startY = event.pageY - contentArea.offsetTop;
-            scrollLeft = contentArea.scrollLeft;
-            scrollTop = contentArea.scrollTop;
-        }
-    });
-
-    contentArea.addEventListener('mouseleave', () => {
-        isPanning = false;
-    });
-
-    contentArea.addEventListener('mouseup', () => {
-        isPanning = false;
-    });
-
-    contentArea.addEventListener('mousemove', (event) => {
-        if (isPanning) {
+    // Recenter functionality
+    contentArea.addEventListener('click', (event) => {
+        if (event.ctrlKey && event.button === 0) {
             event.preventDefault();
-            const x = event.pageX - contentArea.offsetLeft;
-            const y = event.pageY - contentArea.offsetTop;
-            const walkX = (x - startX) * 1; // multiply by speed factor if needed
-            const walkY = (y - startY) * 1; // multiply by speed factor if needed
-            contentArea.scrollLeft = scrollLeft - walkX;
-            contentArea.scrollTop = scrollTop - walkY;
+            const zoomableContent = contentArea.querySelector('.zoomable-content');
+            if (zoomableContent) {
+                const rect = contentArea.getBoundingClientRect();
+                const clickX = event.clientX - rect.left;
+                const clickY = event.clientY - rect.top;
+                const offsetX = (clickX + contentArea.scrollLeft) / zoomLevel;
+                const offsetY = (clickY + contentArea.scrollTop) / zoomLevel;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                contentArea.scrollLeft = offsetX * zoomLevel - centerX;
+                contentArea.scrollTop = offsetY * zoomLevel - centerY;
+            }
             updateClients();
         }
     });
