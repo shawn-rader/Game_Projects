@@ -127,31 +127,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.open(url, '_blank');
     });
 
-    addImageButton.addEventListener('click', async () => {
-        if (navigator.clipboard && navigator.clipboard.read) {
-            try {
-                const clipboardItems = await navigator.clipboard.read();
-                const imageItem = clipboardItems.find(item => item.types.includes('image/png') || item.types.includes('image/jpeg'));
-                if (imageItem) {
-                    const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
-                    if (userConfirmed) {
-                        const type = imageItem.types.find(t => t.startsWith('image/'));
-                        const blob = await imageItem.getType(type);
-                        const file = new File([blob], 'clipboard_image.png', { type });
-                        uploadImage(file);
-                    } else {
-                        fileInputImage.click();
-                    }
-                } else {
-                    fileInputImage.click();
-                }
-            } catch (err) {
-                console.error('Failed to read clipboard contents: ', err);
-                fileInputImage.click();
-            }
-        } else {
-            fileInputImage.click();
-        }
+    addImageButton.addEventListener('click', () => {
+        fileInputImage.click();
     });
 
     fileInputImage.addEventListener('change', async (event) => {
@@ -184,6 +161,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             loadingBarDialog.style.display = 'none';
         }
     }
+
+    // Handle paste event to upload image from clipboard
+    document.addEventListener('paste', async (event) => {
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+                const file = items[i].getAsFile();
+                uploadImage(file);
+                break;
+            }
+        }
+    });
 
     // Zoom functionality
     contentArea.addEventListener('wheel', (event) => {
