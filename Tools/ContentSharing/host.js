@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const launchClientPageButton = document.getElementById('launch-client-page-button');
     const addImageButton = document.getElementById('add-image-button');
     const resetContentButton = document.getElementById('reset-content-button');
+    const addImageModal = document.getElementById('add-image-modal');
+    const pasteArea = document.getElementById('paste-area');
+    const filePickerButton = document.getElementById('file-picker-button');
+    const cancelButton = document.getElementById('cancel-button');
     const loadingBarDialog = document.getElementById('loading-bar-dialog');
     const fileInputImage = document.getElementById('file-input-image');
 
@@ -128,7 +132,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     addImageButton.addEventListener('click', () => {
+        showAddImageModal();
+    });
+
+    filePickerButton.addEventListener('click', () => {
         fileInputImage.click();
+    });
+
+    cancelButton.addEventListener('click', () => {
+        hideAddImageModal();
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === addImageModal) {
+            hideAddImageModal();
+        }
     });
 
     fileInputImage.addEventListener('change', async (event) => {
@@ -159,11 +177,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error during file upload:', err);
         } finally {
             loadingBarDialog.style.display = 'none';
+            hideAddImageModal();
         }
     }
 
     // Handle paste event to upload image from clipboard
-    document.addEventListener('paste', async (event) => {
+    pasteArea.addEventListener('paste', async (event) => {
         const items = (event.clipboardData || event.originalEvent.clipboardData).items;
         for (let i = 0; i < items.length; i++) {
             if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
@@ -173,6 +192,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
+
+    // Show add image modal
+    function showAddImageModal() {
+        addImageModal.style.display = 'block';
+    }
+
+    // Hide add image modal
+    function hideAddImageModal() {
+        addImageModal.style.display = 'none';
+    }
 
     // Zoom functionality
     contentArea.addEventListener('wheel', (event) => {
