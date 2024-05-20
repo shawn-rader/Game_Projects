@@ -3,21 +3,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const generateClientButton = document.getElementById('generate-client-button');
     const copyClientURLButton = document.getElementById('copy-client-url-button');
     const launchClientPageButton = document.getElementById('launch-client-page-button');
-    const addContentButton = document.getElementById('add-content-button');
-    const resetContentButton = document.getElementById('reset-content-button');
-    const addContentDialog = document.getElementById('add-content-dialog');
     const addImageButton = document.getElementById('add-image-button');
-    const addTextButton = document.getElementById('add-text-button');
-    const addCSVButton = document.getElementById('add-csv-button');
-    const addWebpageButton = document.getElementById('add-webpage-button');
+    const resetContentButton = document.getElementById('reset-content-button');
+    const loadingBarDialog = document.getElementById('loading-bar-dialog');
     const fileInputImage = document.getElementById('file-input-image');
-    const fileInputText = document.getElementById('file-input-text');
-    const fileInputCSV = document.getElementById('file-input-csv');
-    const webpageDialog = document.getElementById('webpage-dialog');
-    const webpageURLInput = document.getElementById('webpage-url-input');
-    const addWebpageConfirmButton = document.getElementById('add-webpage-confirm-button');
-    const closeBtn = document.querySelector('.close');
-    const cancelButton = document.getElementById('cancel-button');
 
     let uuid = null;
     let clients = [];
@@ -81,10 +70,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     function enableButtons() {
         copyClientURLButton.style.display = 'inline';
         launchClientPageButton.style.display = 'inline';
-        addContentButton.style.display = 'inline';
+        addImageButton.style.display = 'inline';
+        resetContentButton.style.display = 'inline';
         copyClientURLButton.disabled = false;
         launchClientPageButton.disabled = false;
-        addContentButton.disabled = false;
+        addImageButton.disabled = false;
         resetContentButton.disabled = false;
     }
 
@@ -137,144 +127,53 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.open(url, '_blank');
     });
 
-    addContentButton.addEventListener('click', () => {
-        addContentDialog.style.display = 'block';
-    });
-
-    addImageButton.addEventListener('click', () => {
-        fileInputImage.click();
-    });
-
-    addTextButton.addEventListener('click', () => {
-        fileInputText.click();
-    });
-
-    addCSVButton.addEventListener('click', () => {
-        fileInputCSV.click();
-    });
-
-    addWebpageButton.addEventListener('click', () => {
-        webpageDialog.style.display = 'block';
+    addImageButton.addEventListener('click', async () => {
+        const clipboardItems = await navigator.clipboard.read();
+        const imageItem = clipboardItems.find(item => item.types.includes('image/png'));
+        if (imageItem) {
+            const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
+            if (userConfirmed) {
+                const blob = await imageItem.getType('image/png');
+                const file = new File([blob], 'clipboard_image.png', { type: 'image/png' });
+                uploadImage(file);
+            } else {
+                fileInputImage.click();
+            }
+        } else {
+            fileInputImage.click();
+        }
     });
 
     fileInputImage.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-    
-            try {
-                const response = await fetch(`/uploadFile/${uuid}`, {
-                    method: 'POST',
-                    body: formData
-                });
-    
-                if (response.ok) {
-                    const fileURL = await response.text();
-                    contentArea.innerHTML = `<div class="zoomable-content"><img src="${fileURL}" alt="Uploaded Content" style="max-width:100%; max-height:100%; display:block; margin:auto;"></div>`;
-                    addContentDialog.style.display = 'none';
-                } else {
-                    console.error('Failed to upload file');
-                }
-            } catch (err) {
-                console.error('Error during file upload:', err);
+            uploadImage(file);
+        }
+    });
+
+    async function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            loadingBarDialog.style.display = 'block';
+            const response = await fetch(`/uploadFile/${uuid}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const fileURL = await response.text();
+                contentArea.innerHTML = `<div class="zoomable-content"><img src="${fileURL}" alt="Uploaded Content" style="max-width:100%; max-height:100%; display:block; margin:auto;"></div>`;
+            } else {
+                console.error('Failed to upload file');
             }
+        } catch (err) {
+            console.error('Error during file upload:', err);
+        } finally {
+            loadingBarDialog.style.display = 'none';
         }
-    });
-
-    fileInputText.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch(`/uploadFile/${uuid}`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const fileURL = await response.text();
-                    const responseText = await fetch(fileURL);
-                    const textContent = await responseText.text();
-                    contentArea.innerHTML = `<div class="zoomable-content"><pre style="white-space: pre-wrap; word-wrap: break-word; text-align: left;">${textContent}</pre></div>`;
-                    addContentDialog.style.display = 'none';
-                } else {
-                    console.error('Failed to upload file');
-                }
-            } catch (err) {
-                console.error('Error during file upload:', err);
-            }
-        }
-    });
-
-    fileInputCSV.addEventListener('change', async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch(`/uploadFile/${uuid}`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const fileURL = await response.text();
-                    const responseCSV = await fetch(fileURL);
-                    const csvContent = await responseCSV.text();
-                    const rows = csvContent.split('\n').map(row => row.split(','));
-
-                    let tableHTML = '<div class="zoomable-content"><table style="width: 100%; border-collapse: collapse;">';
-                    rows.forEach(row => {
-                        tableHTML += '<tr>';
-                        row.forEach(cell => {
-                            tableHTML += `<td style="border: 1px solid black; padding: 8px;">${cell}</td>`;
-                        });
-                        tableHTML += '</tr>';
-                    });
-                    tableHTML += '</table></div>';
-
-                    contentArea.innerHTML = tableHTML;
-                    addContentDialog.style.display = 'none';
-                } else {
-                    console.error('Failed to upload file');
-                }
-            } catch (err) {
-                console.error('Error during file upload:', err);
-            }
-        }
-    });
-
-    addWebpageConfirmButton.addEventListener('click', () => {
-        const url = webpageURLInput.value;
-        if (url) {
-            contentArea.innerHTML = `<div class="zoomable-content"><iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe></div>`;
-            webpageDialog.style.display = 'none';
-            addContentDialog.style.display = 'none';
-        }
-    });
-
-    closeBtn.addEventListener('click', () => {
-        addContentDialog.style.display = 'none';
-        webpageDialog.style.display = 'none';
-    });
-
-    cancelButton.addEventListener('click', () => {
-        addContentDialog.style.display = 'none';
-        webpageDialog.style.display = 'none';
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target === addContentDialog) {
-            addContentDialog.style.display = 'none';
-        }
-        if (event.target === webpageDialog) {
-            webpageDialog.style.display = 'none';
-        }
-    });
+    }
 
     // Zoom functionality
     contentArea.addEventListener('wheel', (event) => {
