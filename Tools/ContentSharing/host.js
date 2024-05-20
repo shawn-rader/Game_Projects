@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let uuid = null;
     let clients = [];
     let config = {};
+    let zoomLevel = 1;
+    let isPanning = false;
+    let startX, startY, scrollLeft, scrollTop;
 
     async function fetchConfig() {
         const response = await fetch('/config.json');
@@ -69,8 +72,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 },
                 body: JSON.stringify({
                     content: contentArea.innerHTML,
-                    zoom: 1, // add zoom functionality
-                    position: { x: 0, y: 0 } // add position functionality
+                    zoom: zoomLevel,
+                    position: { x: contentArea.scrollLeft, y: contentArea.scrollTop }
                 })
             });
         });
@@ -267,6 +270,50 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (event.target === webpageDialog) {
             webpageDialog.style.display = 'none';
+        }
+    });
+
+    // Zoom functionality
+    contentArea.addEventListener('wheel', (event) => {
+        if (event.ctrlKey) {
+            event.preventDefault();
+            zoomLevel += event.deltaY * -0.01;
+            zoomLevel = Math.min(Math.max(0.5, zoomLevel), 3);
+            contentArea.style.transform = `scale(${zoomLevel})`;
+            contentArea.style.transformOrigin = '0 0';
+            updateClients();
+        }
+    });
+
+    // Panning functionality
+    contentArea.addEventListener('mousedown', (event) => {
+        if (zoomLevel > 1) {
+            isPanning = true;
+            startX = event.pageX - contentArea.offsetLeft;
+            startY = event.pageY - contentArea.offsetTop;
+            scrollLeft = contentArea.scrollLeft;
+            scrollTop = contentArea.scrollTop;
+        }
+    });
+
+    contentArea.addEventListener('mouseleave', () => {
+        isPanning = false;
+    });
+
+    contentArea.addEventListener('mouseup', () => {
+        isPanning = false;
+    });
+
+    contentArea.addEventListener('mousemove', (event) => {
+        if (isPanning) {
+            event.preventDefault();
+            const x = event.pageX - contentArea.offsetLeft;
+            const y = event.pageY - contentArea.offsetTop;
+            const walkX = (x - startX) * 1; // multiply by speed factor if needed
+            const walkY = (y - startY) * 1; // multiply by speed factor if needed
+            contentArea.scrollLeft = scrollLeft - walkX;
+            contentArea.scrollTop = scrollTop - walkY;
+            updateClients();
         }
     });
 
