@@ -128,18 +128,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     addImageButton.addEventListener('click', async () => {
-        const clipboardItems = await navigator.clipboard.read();
-        const imageItem = clipboardItems.find(item => item.types.includes('image/png'));
-        if (imageItem) {
-            const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
-            if (userConfirmed) {
-                const blob = await imageItem.getType('image/png');
-                const file = new File([blob], 'clipboard_image.png', { type: 'image/png' });
-                uploadImage(file);
+        try {
+            const clipboardItems = await navigator.clipboard.read();
+            const imageItem = clipboardItems.find(item => item.types.includes('image/png') || item.types.includes('image/jpeg'));
+            if (imageItem) {
+                const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
+                if (userConfirmed) {
+                    const type = imageItem.types.find(t => t.startsWith('image/'));
+                    const blob = await imageItem.getType(type);
+                    const file = new File([blob], 'clipboard_image.png', { type });
+                    uploadImage(file);
+                } else {
+                    fileInputImage.click();
+                }
             } else {
                 fileInputImage.click();
             }
-        } else {
+        } catch (err) {
+            console.error('Failed to read clipboard contents: ', err);
             fileInputImage.click();
         }
     });
@@ -187,6 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const offsetX = (centerX + contentArea.scrollLeft) / zoomLevel;
                 const offsetY = (centerY + contentArea.scrollTop) / zoomLevel;
                 zoomLevel += event.deltaY * -0.01;
+                if (zoomLevel < 0.1) zoomLevel = 0.1; // prevent zooming out too far
                 zoomableContent.style.transform = `scale(${zoomLevel})`;
                 contentArea.scrollLeft = offsetX * zoomLevel - centerX;
                 contentArea.scrollTop = offsetY * zoomLevel - centerY;
