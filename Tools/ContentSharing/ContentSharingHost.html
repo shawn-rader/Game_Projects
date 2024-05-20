@@ -33,9 +33,18 @@
     <div id="add-content-dialog" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p>Add your content here.</p>
+            <p>Select content to add:</p>
             <button id="add-image-button">Add Image</button>
-            <input type="file" id="file-input" accept="image/*" style="display:none;">
+            <button id="add-text-button">Add Text Document</button>
+            <button id="add-csv-button">Add CSV Document</button>
+            <button id="add-webpage-button">Add Webpage</button>
+            <input type="file" id="file-input-image" accept="image/*" style="display:none;">
+            <input type="file" id="file-input-text" accept=".txt" style="display:none;">
+            <input type="file" id="file-input-csv" accept=".csv" style="display:none;">
+            <div id="webpage-dialog" style="display:none;">
+                <input type="text" id="webpage-url-input" placeholder="Enter webpage URL">
+                <button id="add-webpage-confirm-button">Add Webpage</button>
+            </div>
             <button id="cancel-button">Cancel</button>
         </div>
     </div>

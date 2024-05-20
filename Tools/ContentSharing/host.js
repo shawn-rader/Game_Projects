@@ -6,7 +6,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addContentButton = document.getElementById('add-content-button');
     const addContentDialog = document.getElementById('add-content-dialog');
     const addImageButton = document.getElementById('add-image-button');
-    const fileInput = document.getElementById('file-input');
+    const addTextButton = document.getElementById('add-text-button');
+    const addCSVButton = document.getElementById('add-csv-button');
+    const addWebpageButton = document.getElementById('add-webpage-button');
+    const fileInputImage = document.getElementById('file-input-image');
+    const fileInputText = document.getElementById('file-input-text');
+    const fileInputCSV = document.getElementById('file-input-csv');
+    const webpageDialog = document.getElementById('webpage-dialog');
+    const webpageURLInput = document.getElementById('webpage-url-input');
+    const addWebpageConfirmButton = document.getElementById('add-webpage-confirm-button');
     const closeBtn = document.querySelector('.close');
     const cancelButton = document.getElementById('cancel-button');
 
@@ -128,17 +136,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     addImageButton.addEventListener('click', () => {
-        fileInput.click();
+        fileInputImage.click();
     });
 
-    fileInput.addEventListener('change', async (event) => {
+    addTextButton.addEventListener('click', () => {
+        fileInputText.click();
+    });
+
+    addCSVButton.addEventListener('click', () => {
+        fileInputCSV.click();
+    });
+
+    addWebpageButton.addEventListener('click', () => {
+        webpageDialog.style.display = 'block';
+    });
+
+    fileInputImage.addEventListener('change', async (event) => {
         const file = event.target.files[0];
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
-    
-            console.log('Uploading file with UUID:', uuid);
-            console.log('formData file:', formData.get('file'));
     
             try {
                 const response = await fetch(`/uploadFile/${uuid}`, {
@@ -148,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
                 if (response.ok) {
                     const fileURL = await response.text();
-                    contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content">`;
+                    contentArea.innerHTML = `<img src="${fileURL}" alt="Uploaded Content" style="max-width:100%; max-height:100%; display:block; margin:auto;">`;
                     addContentDialog.style.display = 'none';
                 } else {
                     console.error('Failed to upload file');
@@ -158,18 +175,98 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
-    
+
+    fileInputText.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`/uploadFile/${uuid}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const fileURL = await response.text();
+                    const responseText = await fetch(fileURL);
+                    const textContent = await responseText.text();
+                    contentArea.innerHTML = `<pre style="white-space: pre-wrap; word-wrap: break-word; text-align: left;">${textContent}</pre>`;
+                    addContentDialog.style.display = 'none';
+                } else {
+                    console.error('Failed to upload file');
+                }
+            } catch (err) {
+                console.error('Error during file upload:', err);
+            }
+        }
+    });
+
+    fileInputCSV.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`/uploadFile/${uuid}`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const fileURL = await response.text();
+                    const responseCSV = await fetch(fileURL);
+                    const csvContent = await responseCSV.text();
+                    const rows = csvContent.split('\n').map(row => row.split(','));
+
+                    let tableHTML = '<table style="width: 100%; border-collapse: collapse;">';
+                    rows.forEach(row => {
+                        tableHTML += '<tr>';
+                        row.forEach(cell => {
+                            tableHTML += `<td style="border: 1px solid black; padding: 8px;">${cell}</td>`;
+                        });
+                        tableHTML += '</tr>';
+                    });
+                    tableHTML += '</table>';
+
+                    contentArea.innerHTML = tableHTML;
+                    addContentDialog.style.display = 'none';
+                } else {
+                    console.error('Failed to upload file');
+                }
+            } catch (err) {
+                console.error('Error during file upload:', err);
+            }
+        }
+    });
+
+    addWebpageConfirmButton.addEventListener('click', () => {
+        const url = webpageURLInput.value;
+        if (url) {
+            contentArea.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+            webpageDialog.style.display = 'none';
+            addContentDialog.style.display = 'none';
+        }
+    });
+
     closeBtn.addEventListener('click', () => {
         addContentDialog.style.display = 'none';
+        webpageDialog.style.display = 'none';
     });
 
     cancelButton.addEventListener('click', () => {
         addContentDialog.style.display = 'none';
+        webpageDialog.style.display = 'none';
     });
 
     window.addEventListener('click', (event) => {
         if (event.target === addContentDialog) {
             addContentDialog.style.display = 'none';
+        }
+        if (event.target === webpageDialog) {
+            webpageDialog.style.display = 'none';
         }
     });
 
