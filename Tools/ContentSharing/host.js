@@ -158,7 +158,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function uploadImage(file) {
         const formData = new FormData();
-        formData.append('file', file);
+        // Append a unique filename to avoid caching issues
+        const uniqueFilename = `${Date.now()}_${file.name}`;
+        formData.append('file', file, uniqueFilename);
 
         try {
             loadingBarDialog.style.display = 'block';
@@ -169,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (response.ok) {
                 const fileURL = await response.text();
-                contentArea.innerHTML = `<div class="zoomable-content"><img src="${fileURL}" alt="Uploaded Content" style="max-width:100%; max-height:100%; display:block; margin:auto;"></div>`;
+                contentArea.innerHTML = `<div class="zoomable-content"><img src="${fileURL}?${Date.now()}" alt="Uploaded Content" style="max-width:100%; max-height:100%; display:block; margin:auto;"></div>`;
             } else {
                 console.error('Failed to upload file');
             }
