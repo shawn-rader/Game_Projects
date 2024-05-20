@@ -128,24 +128,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     addImageButton.addEventListener('click', async () => {
-        try {
-            const clipboardItems = await navigator.clipboard.read();
-            const imageItem = clipboardItems.find(item => item.types.includes('image/png') || item.types.includes('image/jpeg'));
-            if (imageItem) {
-                const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
-                if (userConfirmed) {
-                    const type = imageItem.types.find(t => t.startsWith('image/'));
-                    const blob = await imageItem.getType(type);
-                    const file = new File([blob], 'clipboard_image.png', { type });
-                    uploadImage(file);
+        if (navigator.clipboard && navigator.clipboard.read) {
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                const imageItem = clipboardItems.find(item => item.types.includes('image/png') || item.types.includes('image/jpeg'));
+                if (imageItem) {
+                    const userConfirmed = confirm('An image is available in the clipboard. Do you want to use it?');
+                    if (userConfirmed) {
+                        const type = imageItem.types.find(t => t.startsWith('image/'));
+                        const blob = await imageItem.getType(type);
+                        const file = new File([blob], 'clipboard_image.png', { type });
+                        uploadImage(file);
+                    } else {
+                        fileInputImage.click();
+                    }
                 } else {
                     fileInputImage.click();
                 }
-            } else {
+            } catch (err) {
+                console.error('Failed to read clipboard contents: ', err);
                 fileInputImage.click();
             }
-        } catch (err) {
-            console.error('Failed to read clipboard contents: ', err);
+        } else {
             fileInputImage.click();
         }
     });
