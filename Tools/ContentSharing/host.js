@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const copyClientURLButton = document.getElementById('copy-client-url-button');
     const launchClientPageButton = document.getElementById('launch-client-page-button');
     const addContentButton = document.getElementById('add-content-button');
+    const resetContentButton = document.getElementById('reset-content-button');
     const addContentDialog = document.getElementById('add-content-dialog');
     const addImageButton = document.getElementById('add-image-button');
     const addTextButton = document.getElementById('add-text-button');
@@ -80,9 +81,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function enableButtons() {
+        copyClientURLButton.style.display = 'inline';
+        launchClientPageButton.style.display = 'inline';
+        addContentButton.style.display = 'inline';
         copyClientURLButton.disabled = false;
         launchClientPageButton.disabled = false;
         addContentButton.disabled = false;
+        resetContentButton.disabled = false;
     }
 
     generateClientButton.addEventListener('click', async () => {
@@ -318,6 +323,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             contentArea.scrollTop = scrollTop - walkY;
             updateClients();
         }
+    });
+
+    resetContentButton.addEventListener('click', () => {
+        zoomLevel = 1;
+        contentArea.scrollLeft = 0;
+        contentArea.scrollTop = 0;
+        const zoomableContent = contentArea.querySelector('.zoomable-content');
+        if (zoomableContent) {
+            zoomableContent.style.transform = 'scale(1)';
+        }
+        updateClients();
     });
 
     // Ensure the content area is responsive

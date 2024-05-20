@@ -20,9 +20,10 @@
 
     <div id="top-bar">
         <button id="generate-client-button">Generate Client</button>
-        <button id="copy-client-url-button" disabled>Copy Client URL</button>
-        <button id="launch-client-page-button" disabled>Launch Client Page</button>
-        <button id="add-content-button" disabled>Add Content</button>
+        <button id="copy-client-url-button" style="display:none;" disabled>Copy Client URL</button>
+        <button id="launch-client-page-button" style="display:none;" disabled>Launch Client Page</button>
+        <button id="add-content-button" style="display:none;" disabled>Add Content</button>
+        <button id="reset-content-button" disabled>Reset Content</button>
     </div>
 
     <div id="main-section">
@@ -38,6 +39,9 @@
             <button id="add-text-button">Add Text Document</button>
             <button id="add-csv-button">Add CSV Document</button>
             <button id="add-webpage-button">Add Webpage</button>
+            <div class="modal-footer">
+                <button id="cancel-button">Cancel</button>
+            </div>
             <input type="file" id="file-input-image" accept="image/*" style="display:none;">
             <input type="file" id="file-input-text" accept=".txt" style="display:none;">
             <input type="file" id="file-input-csv" accept=".csv" style="display:none;">
@@ -45,7 +49,6 @@
                 <input type="text" id="webpage-url-input" placeholder="Enter webpage URL">
                 <button id="add-webpage-confirm-button">Add Webpage</button>
             </div>
-            <button id="cancel-button">Cancel</button>
         </div>
     </div>
 
