@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Show add image modal
     function showAddImageModal() {
         addImageModal.style.display = 'block';
+        pasteArea.focus();
     }
 
     // Hide add image modal
